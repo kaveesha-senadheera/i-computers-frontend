@@ -1,18 +1,19 @@
-import OnSaleNow from "./components/onSaleNow"
-import ProductCard from "./components/productCard"
-import UserData from "./components/userData"
+import { Route, Routes } from "react-router-dom";
+import AdminPage from "./pages/admin";
+import HomePage from "./pages/home";
+import LoginPage from "./pages/login";
 
 
-function App() {
- 
-
+export default function App() {
   return (
-    <>
-     <UserData></UserData>
-     <OnSaleNow></OnSaleNow>
-
-     </>
-  )
+    
+      <div className="w=full h-screen bg-gray-200 ">
+        <Routes>
+          <Route path="/" element={<HomePage/>}/>
+          <Route path="/admin/*" element={<AdminPage/>}/>
+          <Route  path="/login" element={<LoginPage/>}/>
+        </Routes>
+      </div>
+    
+  );
 }
-
-export default App
