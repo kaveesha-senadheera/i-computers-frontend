@@ -14,7 +14,7 @@ export default function AdminPage(){
                 <Link to="/admin">Orders</Link>
                 <Link to="/admin/products">Products</Link>
                 <Link to="/admin/users">Users</Link>
-//smooth-link tags
+
             </div>
              <div className="w-[calc(100%-300px)] h-full bg bg bg-yellow-400">
                 <Routes>
