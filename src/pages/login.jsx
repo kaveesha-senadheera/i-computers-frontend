@@ -39,10 +39,10 @@ export default function LoginPage(){
          )
          console.log(response)
          toast.success("Login Successful")
+         localStorage.setItem("token" , response.data.token)
          if(response.data.role == "admin"){
            // window.location.href ="/admin/" (navigate wenna use navigate hook ekk dmmama lesi ethkot refresh wenne na smooth)
-
-           navigate("/admin")
+             navigate("/admin")
          }else{
             //redirect to home page
          }
