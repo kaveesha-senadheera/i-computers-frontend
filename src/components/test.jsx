@@ -1,60 +1,37 @@
 import { useState } from "react"
+import { createClient } from "@supabase/supabase-js"
+import UploadFile from "../utils/mediaUloads"
+
+
 export default function Test(){
-     const[count,setCount] = useState(0)
-     const[status,setstatus]=useState("Sleeping")
-     const[isVisible,setIsVisible] = useState(true)
+     
+const[file,setFile] =useState(null)
 
-
+async function upload(){
+    try{
+         const url = await UploadFile(file)
+         console.log(url)
+    }catch(err){
+      
+      console.log("File upload at URL : "+ url)
+    }
+    }
+    
+   
+}
  
     return(
         <div className="w-full h-full bg bg-yellow-600 flex justify-center items-center">
+             <input type ="file" onChange={
+              (e)=>{
+                    setFile(e.target.files[0])
+              }
+              
+              }></input>
+              <button onClick={upload}className="w-[100px] h-[40px] bg-blue-500 text-white rounded-lg">\
+                Upload
+              </button>
           
-          <button onClick={
-            ()=>{
-              setIsVisible(!isVisible)
-            }
-            //if else
-          }className="w-[50px] h-[50px] bg-red-600 text-white">{isVisible?"X":"O"}</button>
-
-          {/*if*/}
-             {isVisible && <div className="w-[400px] h-[400px] bg-white flex justify-center items-center flex-col">
-                 <h1 className="text-[55px]">{count}</h1>
-                 <div className="w-full h-[50px] flex justify-center items-center gap-2">
-                  <button onClick={
-                  ()=>{
-                      setCount(count -1)
-                      }
-                } className="w-[100px] h-[45px] bg-red-600 text-white">
-                        Decrement
-                  </button>
-                  <button onClick={
-                    ()=>{
-                       setCount(count +1)
-                  }
-                    }className="w-[100px] h-[45px] bg-green-600 text-white">
-                        Increment
-                  </button>
-                </div>
-
-                 <h1 className="text-[55px]">{status}</h1>
-                 <div className="w-full h-[50px] flex justify-center items-center gap-2">
-                  <button onClick={
-                  ()=>{
-                     setstatus("Sleeping")
-                      }
-                } className="w-[100px] h-[45px] bg-red-600 text-white">
-                        Sleep
-                  </button>
-                  <button onClick={
-                    ()=>{
-                      setstatus("Awake")
-                  }
-                    }className="w-[100px] h-[45px] bg-green-600 text-white">
-                        Awake
-                  </button>
-                </div>
-
-             </div>}
       </div>
 
      
@@ -66,7 +43,7 @@ export default function Test(){
 
 
     
-}
+
 
 //hook ek dnne function call karana thanata yatin
 //hook run wenne  anupiliwalin okkoma run wenn oni ekama widiyata

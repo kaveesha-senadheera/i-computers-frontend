@@ -6,6 +6,7 @@ export default function AdminAddProductPage(){
      const[productId , setProductId]=useState("");
      const[productName, setProductName]=useState("")
      const[Description, setDescription]=useState("")
+     const[files ,setFiles]=useState([]);
      const[AltNames, setAltNames]=useState([])
      const[price, setPrice]=useState("")
      const[LabeledPrice, setLabeledPrice]=useState("")
@@ -69,6 +70,12 @@ export default function AdminAddProductPage(){
                 <label className="font-bold ml-2">Description</label>
                 <textarea value={Description} onChange={(e)=>{setDescription(e.target.value)}}placeholder="Ex: Laptop" className="border-4 border-accent rounded-[10px] h-[100px] p-2 m-2 focus:outline-white"/>
             </div>
+             
+             <div className="w-full h-[120px] flex flex-col">
+                 <label className="font-bold ml-2">Images</label>
+                 <input multiple type ="file" onChange={(e)=> {setFiles(e.target.files)}} className="border-4 border-accent rounded-[10px] h-[50px] p-2 m-2 focus:outline-white"/>
+             </div>
+
             <div className="w-full h-[120px] flex flex-col">
                 <label className="font-bold ml-2">Alternative Names (comma seperated) </label>
                 <input value={AltNames} onChange={(e)=>{setAltNames(e.target.value)}}placeholder="Ex: Laptop,Notebook,Portable Computer" className="border-4 border-accent rounded-[10px] h-[50px] p-2 m-2 focus:outline-white"/>

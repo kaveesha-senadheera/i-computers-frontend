@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import{Link} from "react-router-dom";
 import getformattedPrice from "../../utils/priceFormats";
+import axios from "axios";
 
 const sampleProducts = [
   {
@@ -74,6 +75,20 @@ const sampleProducts = [
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState(sampleProducts);
+  useEffect(()=> {
+    const token = localStorage.getItem("token");
+
+    axios
+    .get(import.meta.env.VITE_API_URL + "/products",{
+      headers:{
+        Authorization: "Bearer" + token,
+      },
+    })
+    .then((response) => {
+      setProducts(response.data);
+    });
+  }, []);
+
 
   return (
     <div className="w-full h-full p-6 flex flex-col">
