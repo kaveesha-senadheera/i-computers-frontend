@@ -26,10 +26,23 @@ export default function AdminAddProductPage(){
                 window.location.href ="/login";
                 return;
             }
+
+            const fileUploadPromises = [];
+            
+            for(let i=0; i<files.length ; i++){
+                fileUploadPromises[i]=uploadFile(files[i])
+            }
+
+            const imageURLs = await promise.all(fileUploadPromises);
+            
+           
+
+
                 await axios.post(import.meta.env.VITE_API_URL + "/products",{
                    productId: productId,
                    productName :productName,
                    Description: Description,
+                   images : imageURLs,
                    price:price,
                    LabeledPrice:LabeledPrice,
                    AltNames:AltNames.split(","),

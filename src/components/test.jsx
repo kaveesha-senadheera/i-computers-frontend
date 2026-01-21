@@ -18,7 +18,7 @@ async function upload(){
     }
     
    
-}
+
  
     return(
         <div className="w-full h-full bg bg-yellow-600 flex justify-center items-center">
@@ -27,8 +27,8 @@ async function upload(){
                     setFile(e.target.files[0])
               }
               
-              }></input>
-              <button onClick={upload}className="w-[100px] h-[40px] bg-blue-500 text-white rounded-lg">\
+              }/>
+              <button onClick={upload}className="w-[100px] h-[40px] bg-blue-500 text-white rounded-lg">
                 Upload
               </button>
           
@@ -38,7 +38,7 @@ async function upload(){
     )
 
     
-             
+  }            
       
 
 

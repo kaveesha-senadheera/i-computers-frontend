@@ -81,11 +81,12 @@ export default function AdminProductsPage() {
     axios
     .get(import.meta.env.VITE_API_URL + "/products",{
       headers:{
-        Authorization: "Bearer" + token,
+        Authorization: "Bearer " + token,
       },
     })
     .then((response) => {
-      setProducts(response.data);
+      setProducts(prev => [...prev, ...(response.data.products || [])]);
+
     });
   }, []);
 
@@ -112,80 +113,82 @@ export default function AdminProductsPage() {
       </div>
 
       {/* ---------- Table Container with vertical scroll only ---------- */}
-      <div className="w-full max-h-[500px] overflow-y-auto overflow-x-hidden rounded-2xl shadow-xl border border-[var(--color-accent)]/20 bg-white">
-        <table className="w-full border-collapse text-sm">
+      {/* ---------- Table Container with vertical scroll only ---------- */}
+<div className="w-full max-h-[500px] overflow-y-auto overflow-x-auto rounded-2xl shadow-xl border border-[var(--color-accent)]/20 bg-white">
+  <table className="w-full border-collapse text-sm table-fixed">
+    {/* Header */}
+    <thead className="sticky top-0 z-10 bg-[var(--color-secondary)] text-white">
+      <tr>
+        <th className="px-5 py-4 text-left">Product ID</th>
+        <th className="px-5 py-4 text-left">Name</th>
+        <th className="px-5 py-4 text-left">Price</th>
+        <th className="px-5 py-4 text-left">Labeled Price</th>
+        <th className="px-5 py-4 text-left">Category</th>
+        <th className="px-5 py-4 text-center">Image</th>
+        <th className="px-5 py-4 text-center">Status</th>
+        <th className="px-5 py-4 text-left">Brand</th>
+        <th className="px-5 py-4 text-left">Model</th>
+      </tr>
+    </thead>
 
-          {/* Header */}
-          <thead className="sticky top-0 z-10 bg-[var(--color-secondary)] text-white">
-            <tr>
-              <th className="px-5 py-4 text-left">Product ID</th>
-              <th className="px-5 py-4 text-left">Name</th>
-              <th className="px-5 py-4 text-left">Price</th>
-              <th className="px-5 py-4 text-left">Labeled Price</th>
-              <th className="px-5 py-4 text-left">Category</th>
-              <th className="px-5 py-4 text-center">Image</th>
-              <th className="px-5 py-4 text-center">Status</th>
-              <th className="px-5 py-4 text-left">Brand</th>
-              <th className="px-5 py-4 text-left">Model</th>
-            </tr>
-          </thead>
+    {/* Body */}
+    <tbody className="align-top">
+      {products.length === 0 ? (
+        <tr>
+          <td colSpan={9} className="py-10 text-center text-gray-400">
+            No products found
+          </td>
+        </tr>
+      ) : (
+        Array.isArray(products) &&
+        products.map((item, index) => (
+          <tr
+            key={item.productId}
+            className={`border-b border-[var(--color-accent)]/20 ${
+              index % 2 === 0 ? "bg-white" : "bg-[var(--color-primary)]/40"
+            } hover:bg-[var(--color-primary)] transition-colors`}
+          >
+            <td className="px-5 py-4 break-words">{item.productId}</td>
+            <td className="px-5 py-4 font-semibold break-words">{item.productName}</td>
+            <td className="px-5 py-4 text-[var(--color-accent)] font-semibold">
+              {getformattedPrice(item.price)}
+            </td>
+            <td className="px-5 py-4 text-gray-400 line-through">
+              {getformattedPrice(item.LabeledPrice)}
+            </td>
+            <td className="px-5 py-4">
+              <span className="px-3 py-1 rounded-full text-xs bg-[var(--color-accent)]/15">
+                {item.category}
+              </span>
+            </td>
+            <td className="px-5 py-4 flex justify-center">
+              <img
+                src={item.image || "/placeholder.png"}
+                alt={item.productName}
+                loading="lazy"
+                className="w-14 h-14 object-cover rounded-xl border shadow-md"
+              />
+            </td>
+            <td className="px-5 py-4 text-center">
+              {item.isVisible ? (
+                <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                  Visible
+                </span>
+              ) : (
+                <span className="px-3 py-1 text-xs rounded-full bg-red-100 text-red-700">
+                  Hidden
+                </span>
+              )}
+            </td>
+            <td className="px-5 py-4 break-words">{item.Brand || <span className="text-secondary/40">N/A</span>}</td>
+            <td className="px-5 py-4 break-words">{item.model || <span className="text-secondary/40">N/A</span>}</td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
 
-          {/* Body */}
-          <tbody>
-            {products.length === 0 ? (
-              <tr>
-                <td colSpan={9} className="py-10 text-center text-gray-400">
-                  No products found
-                </td>
-              </tr>
-            ) : (
-              products.map((item, index) => (
-                <tr
-                  key={item.productId}
-                  className={`border-b border-[var(--color-accent)]/20 ${
-                    index % 2 === 0 ? "bg-white" : "bg-[var(--color-primary)]/40"
-                  } hover:bg-[var(--color-primary)] transition-colors`}
-                >
-                  <td className="px-5 py-4 break-words">{item.productId}</td>
-                  <td className="px-5 py-4 font-semibold break-words">{item.productName}</td>
-                  <td className="px-5 py-4 text-[var(--color-accent)] font-semibold">
-                    {getformattedPrice(item.price)}
-                  </td>
-                  <td className="px-5 py-4 text-gray-400 line-through">
-                    {getformattedPrice(item.LabeledPrice)}
-                  </td>
-                  <td className="px-5 py-4 break-words">
-                    <span className="px-3 py-1 rounded-full text-xs bg-[var(--color-accent)]/15">
-                      {item.category}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 flex justify-center">
-                    <img
-                      src={item.image || "/placeholder.png"}
-                      alt={item.productName}
-                      loading="lazy"
-                      className="w-14 h-14 object-cover rounded-xl border shadow-md"
-                    />
-                  </td>
-                  <td className="px-5 py-4 text-center">
-                    {item.isVisible ? (
-                      <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                        Visible
-                      </span>
-                    ) : (
-                      <span className="px-3 py-1 text-xs rounded-full bg-red-100 text-red-700">
-                        Hidden
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-5 py-4 break-words">{item.Brand || <span className="text-secondary/40">N/A</span>}</td>
-                  <td className="px-5 py-4 break-words">{item.model || <span className="text-secondary/40">N/A</span>}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
 
       {/* ---------- Add Product Button ---------- */}
       <Link
