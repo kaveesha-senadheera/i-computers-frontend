@@ -8,6 +8,23 @@ export default function LoginPage(){
       const[password,setPassword] = useState("");
       const navigate = useNavigate()
 
+/*function login(){
+   
+    axios.post("http://localhost:3000/users/login",{
+        email : email,
+        password:password
+    }
+).then(
+    ()=>{
+        console.log("Login successfull")
+    }
+).catch(
+    ()=>{
+        console.log(error)
+    }
+)
+}*/
+
      /* function login(){
            console.log(email)
            console.log(password)
@@ -29,9 +46,10 @@ export default function LoginPage(){
       }*/
 
 
-      async function login(){
+      async function login(event){
+        event.preventDefault();
          try{
-         const response = await axios.post("http://localhost:3000/users/login",
+         const response = await axios.post(import.meta.env.VITE_API_URL +"/users/login",
          {
             email : email,
             password:password
@@ -53,67 +71,70 @@ export default function LoginPage(){
          
          }
         
-      
+      return (
+  <div className="w-full h-full bg-[url('/backgroundpic.jpg')] bg-cover bg-no-repeat bg-center flex">
+    <div className="w-[50%] h-full flex justify-center items-center">
+      <img src="/logo.png" className="w-[300px]" />
+      <h1 className="text-4xl font-bold mt-5 text-white">Isuri Computers</h1>
+    </div>
 
-    return(
-        <div className="w-full h-full bg-[url('/backgroundpic.jpg')] bg-cover bg-no-repeat bg-center flex">
-            <div className="w-[50%] h-full flex justify-center items-center"> 
-                <img src="/logo.png" className="w-[300px]"/>
-                <h1 className="text-4xl font-bold mt-5 text-white">Isuri Computers</h1>
-            </div>
-            <div className="w-[50%] h-full flex justify-center items-center">
-          
-              <div className="backdrop-blur-3xl w-[400px] h-[500px] shadow-2xl rounded-lg flex flex-col">
-                   <input type="email" 
-                   placeholder="Email" 
-                   onChange={
-                    (e)=>{
-                        console.log(e.target.value)
-                        
-                    }
-                   }
-                   className="m-5 p-3 w-[90%] h-[50px] rounded-lg border border-secondary outline-none"></input>
-                   <input 
-                         type="password" 
-                         placeholder="Password" 
-                         onChange={
-                    (e)=>{
-                        setEmail(e.target.value)
-                        
-                    }
-                   }
-                         className="m-5 p-3 w-[90%] h-[50px] rounded-lg border border-secondary outline-none">
+    <div className="w-[50%] h-full flex justify-center items-center">
+      <form
+        onSubmit={login}
+        className="backdrop-blur-3xl w-[400px] h-[500px] shadow-2xl rounded-lg flex flex-col"
+      >
+        <input
+          type="email"
+          placeholder="Email"
+          autoComplete="email"
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
+          className="m-5 p-3 w-[90%] h-[50px] rounded-lg border border-secondary outline-none"
+        />
 
-                    </input>
-                    
-                   <p className="w-full text-right pr-5">
-                         Forgot Password?{""}
-                         <Link to="/forgot password"className="text-accent">
-                             Reset
-                         </Link>
-                    </p>
+        <input
+          type="password"
+          placeholder="Password"
+          autoComplete="current-password"
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
+          className="m-5 p-3 w-[90%] h-[50px] rounded-lg border border-secondary outline-none"
+        />
 
-                   <button onClick={login} className="m-5 p-3 w-[90%] h-[50px] bg-accent rounded-lg text-white font-bold ">
-                         Login
-                    </button>
+        <p className="w-full text-right pr-5">
+          Forgot Password?{" "}
+          <Link to="/forgot-password" className="text-accent">
+            Reset
+          </Link>
+        </p>
 
-                   <button className="m-5 p-3 w-[90%] h-[50px] border border-accent rounded-lg text-white font-bold ">
-                         Login with Google 
-                    </button>
+        <button 
+          type="submit"
+          className="m-5 p-3 w-[90%] h-[50px] bg-accent rounded-lg text-white font-bold"
+        >
+          Login
+        </button>
 
-                   <p className="w-full text-right pr-5">
-                         Don't have an account? 
-                         <Link to="/register"className="text-accent">
-                         Register
-                         </Link>
-                    </p>
-                   
-              </div>
+        <button
+          type="button"
+          className="m-5 p-3 w-[90%] h-[50px] border border-accent rounded-lg text-white font-bold"
+        >
+          Login with Google
+        </button>
 
-            </div>
-            
-            
-        </div>
-    )
+        <p className="w-full text-right pr-5">
+          Don't have an account?
+          <Link to="/register" className="text-accent">
+            Register
+          </Link>
+        </p>
+      </form>
+    </div>
+  </div>
+);
+
+
 }
 

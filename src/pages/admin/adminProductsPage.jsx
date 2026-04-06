@@ -3,199 +3,287 @@ import { FaPlus } from "react-icons/fa";
 import{Link} from "react-router-dom";
 import getformattedPrice from "../../utils/priceFormats";
 import axios from "axios";
-
-const sampleProducts = [
-  {
-    productId: "PRD-2001",
-    productName: "Apple MacBook Air M1",
-    Description: "13.3-inch MacBook Air with M1 chip, 8GB RAM, 256GB SSD.",
-    price: 289000,
-    LabeledPrice: 309000,
-    AltNames: ["MacBook Air", "Apple M1 Laptop", "Mac Air"],
-    category: "Laptops",
-    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8",
-    Brand: "Apple",
-    model: "MacBook Air M1",
-    isVisible: true
-  },
-  {
-    productId: "PRD-2002",
-    productName: "HP Pavilion 15",
-    Description: "15.6-inch Full HD laptop with Intel Core i5, 8GB RAM, 512GB SSD.",
-    price: 185000,
-    LabeledPrice: 199000,
-    AltNames: ["HP Pavilion", "HP i5 Laptop", "Pavilion 15"],
-    category: "Laptops",
-    image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7",
-    Brand: "HP",
-    model: "Pavilion 15-eg2xxx",
-    isVisible: true
-  },
-  {
-    productId: "PRD-2003",
-    productName: "Logitech MX Master 3S Mouse",
-    Description: "Advanced wireless mouse with ergonomic design and ultra-fast scrolling.",
-    price: 28500,
-    LabeledPrice: 32000,
-    AltNames: ["MX Master", "Logitech Mouse", "Wireless Mouse"],
-    category: "Accessories",
-    image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39d6",
-    Brand: "Logitech",
-    model: "MX Master 3S",
-    isVisible: true
-  },
-  {
-    productId: "PRD-2004",
-    productName: "Samsung 27\" Curved Monitor",
-    Description: "27-inch Full HD curved monitor with immersive viewing experience.",
-    price: 89000,
-    LabeledPrice: 95000,
-    AltNames: ["Samsung Monitor", "27 inch Monitor", "Curved Display"],
-    category: "Monitors",
-    image: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04",
-    Brand: "Samsung",
-    model: "CF390",
-    isVisible: false
-  },
-
-  {
-    productId: "PRD-2005",
-    productName: "Samsung 27\" Curved Monitor",
-    Description: "27-inch Full HD curved monitor with immersive viewing experience.",
-    price: 89000,
-    LabeledPrice: 95000,
-    AltNames: ["Samsung Monitor", "27 inch Monitor", "Curved Display"],
-    category: "Monitors",
-    image: "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04",
-    Brand: "Samsung",
-    model: "CF390",
-    isVisible: false
-  }
-];
+import { CiEdit } from "react-icons/ci";
+import toast from "react-hot-toast";
 
 export default function AdminProductsPage() {
-  const [products, setProducts] = useState(sampleProducts);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(()=> {
-    const token = localStorage.getItem("token");
+    const fetchProducts = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-    axios
-    .get(import.meta.env.VITE_API_URL + "/products",{
-      headers:{
-        Authorization: "Bearer " + token,
-      },
-    })
-    .then((response) => {
-      setProducts(prev => [...prev, ...(response.data.products || [])]);
+        if (!token) {
+          toast.error("You must be logged in to view products");
+          return;
+        }
 
-    });
+        const response = await axios.get(import.meta.env.VITE_API_URL + "/products", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
+
+        console.log("Received from API:", response.data); // Debug: Log received data
+        setProducts(response.data || []);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        toast.error(error?.response?.data?.message || "Failed to fetch products");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
-
   return (
-    <div className="w-full h-full p-6 flex flex-col">
-
-      {/* ---------- Page Title ---------- */}
-      <div className="mb-4">
-        <h1 className="text-3xl font-bold text-[var(--color-secondary)]">
-          Admin Products Dashboard
-        </h1>
-        <p className="text-gray-600 mt-1">
-          Manage your products, visibility, and details from this table.
-        </p>
+    <div className="w-full h-full overflow-y-scroll bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      {/* Header */}
+      <div className="sticky top-0 z-20 backdrop-blur-lg bg-white/80 border-b border-slate-200/60 shadow-sm">
+        <div className="flex items-center justify-between gap-3 px-6 py-5">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+                Products
+              </h2>
+              <p className="text-sm text-slate-500 mt-0.5">
+                Manage your catalog with ease
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="text-right mr-2">
+              <p className="text-xs text-slate-500 font-medium">Total Items</p>
+              <p className="text-2xl font-bold text-slate-800">{products?.length ?? 0}</p>
+            </div>
+            <div className="w-px h-10 bg-slate-200"></div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-full border border-blue-200/50">
+              <div className="relative">
+                <span className="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-20"></span>
+                <span className="relative h-2 w-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></span>
+              </div>
+              <span className="text-sm font-semibold text-slate-700">Active</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* ---------- Product Count ---------- */}
-      <div className="mb-4">
-        <span className="text-gray-700 font-medium">
-          Total Products:{" "}
-          <span className="text-[var(--color-accent)] font-bold">{products.length}</span>
-        </span>
-      </div>
-
-      {/* ---------- Table Container with vertical scroll only ---------- */}
-      {/* ---------- Table Container with vertical scroll only ---------- */}
-<div className="w-full max-h-[500px] overflow-y-auto overflow-x-auto rounded-2xl shadow-xl border border-[var(--color-accent)]/20 bg-white">
-  <table className="w-full border-collapse text-sm table-fixed">
-    {/* Header */}
-    <thead className="sticky top-0 z-10 bg-[var(--color-secondary)] text-white">
-      <tr>
-        <th className="px-5 py-4 text-left">Product ID</th>
-        <th className="px-5 py-4 text-left">Name</th>
-        <th className="px-5 py-4 text-left">Price</th>
-        <th className="px-5 py-4 text-left">Labeled Price</th>
-        <th className="px-5 py-4 text-left">Category</th>
-        <th className="px-5 py-4 text-center">Image</th>
-        <th className="px-5 py-4 text-center">Status</th>
-        <th className="px-5 py-4 text-left">Brand</th>
-        <th className="px-5 py-4 text-left">Model</th>
-      </tr>
-    </thead>
-
-    {/* Body */}
-    <tbody className="align-top">
-      {products.length === 0 ? (
-        <tr>
-          <td colSpan={9} className="py-10 text-center text-gray-400">
-            No products found
-          </td>
-        </tr>
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-slate-200 rounded-full"></div>
+              <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-blue-500 border-r-purple-600 rounded-full animate-spin"></div>
+            </div>
+            <p className="mt-4 text-slate-600 font-medium">Loading amazing products...</p>
+            <p className="text-sm text-slate-400 mt-1">This will only take a moment</p>
+          </div>
+        </div>
+      ) : products.length === 0 ? (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center max-w-md">
+            <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl flex items-center justify-center">
+              <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-slate-800 mb-2">No products yet</h3>
+            <p className="text-slate-500 mb-6">Start building your catalog by adding your first product</p>
+            <Link
+              to="/admin/add-product"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Add Your First Product
+            </Link>
+          </div>
+        </div>
       ) : (
-        Array.isArray(products) &&
-        products.map((item, index) => (
-          <tr
-            key={item.productId}
-            className={`border-b border-[var(--color-accent)]/20 ${
-              index % 2 === 0 ? "bg-white" : "bg-[var(--color-primary)]/40"
-            } hover:bg-[var(--color-primary)] transition-colors`}
-          >
-            <td className="px-5 py-4 break-words">{item.productId}</td>
-            <td className="px-5 py-4 font-semibold break-words">{item.productName}</td>
-            <td className="px-5 py-4 text-[var(--color-accent)] font-semibold">
-              {getformattedPrice(item.price)}
-            </td>
-            <td className="px-5 py-4 text-gray-400 line-through">
-              {getformattedPrice(item.LabeledPrice)}
-            </td>
-            <td className="px-5 py-4">
-              <span className="px-3 py-1 rounded-full text-xs bg-[var(--color-accent)]/15">
-                {item.category}
-              </span>
-            </td>
-            <td className="px-5 py-4 flex justify-center">
-              <img
-                src={item.image || "/placeholder.png"}
-                alt={item.productName}
-                loading="lazy"
-                className="w-14 h-14 object-cover rounded-xl border shadow-md"
-              />
-            </td>
-            <td className="px-5 py-4 text-center">
-              {item.isVisible ? (
-                <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                  Visible
-                </span>
-              ) : (
-                <span className="px-3 py-1 text-xs rounded-full bg-red-100 text-red-700">
-                  Hidden
-                </span>
-              )}
-            </td>
-            <td className="px-5 py-4 break-words">{item.Brand || <span className="text-secondary/40">N/A</span>}</td>
-            <td className="px-5 py-4 break-words">{item.model || <span className="text-secondary/40">N/A</span>}</td>
-          </tr>
-        ))
+        <div className="p-6">
+          <div className="bg-white rounded-3xl shadow-xl border border-slate-200/60 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200/60">
+                  <tr>
+                    <th className="px-6 py-4 text-left">
+                      <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Product ID</span>
+                    </th>
+                    <th className="px-6 py-4 text-left">
+                      <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Name</span>
+                    </th>
+                    <th className="px-6 py-4 text-left">
+                      <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Price</span>
+                    </th>
+                    <th className="px-6 py-4 text-left">
+                      <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Labeled Price</span>
+                    </th>
+                    <th className="px-6 py-4 text-left">
+                      <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Category</span>
+                    </th>
+                    <th className="px-6 py-4 text-center">
+                      <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Image</span>
+                    </th>
+                    <th className="px-6 py-4 text-center">
+                      <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Status</span>
+                    </th>
+                    <th className="px-6 py-4 text-left">
+                      <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Brand</span>
+                    </th>
+                    <th className="px-6 py-4 text-left">
+                      <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Model</span>
+                    </th>
+                    <th className="px-6 py-4 text-center">
+                      <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-slate-100">
+                  {products.map((item, index) => (
+                    <tr
+                      key={item.productId}
+                      className={`hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 transition-all duration-300 ${
+                        index % 2 === 0 ? 'bg-white' : 'bg-blue-200'
+                      }`}
+                    >
+                      <td className="px-6 py-5">
+                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-slate-100 to-slate-200 border border-slate-300/50">
+                          <span className="text-xs font-mono font-semibold text-slate-700">{item.productId}</span>
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-5">
+                        <div className="flex flex-col gap-1">
+                          <span className="font-semibold text-slate-800 text-sm">{item.productName}</span>
+                          <span className="text-xs text-slate-500">{item.category || 'Uncategorized'}</span>
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-5">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-green-600 text-sm">{getformattedPrice(item.price)}</span>
+                          <span className="text-xs text-slate-400">Current</span>
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-5">
+                        {/* Debug: Check all possible field names */}
+                        {console.log("Product:", item.productName, "All fields:", Object.keys(item), "LabeledPrice:", item.labeledPrice, "labeledPrice:", item.labeledPrice, "markedPrice:", item.markedPrice)}
+                        {(item.labeledPrice && item.labeledPrice !== "" && item.labeledPrice !== null && item.labeledPrice !== undefined) ? (
+                          <div className="flex flex-col">
+                            <span className="text-sm text-slate-500 line-through">{getformattedPrice(item.labeledPrice)}</span>
+                            <span className="text-xs text-slate-400">Original</span>
+                          </div>
+                        ) : (item.labeledPrice && item.labeledPrice !== "" && item.labeledPrice !== null && item.labeledPrice !== undefined) ? (
+                          <div className="flex flex-col">
+                            <span className="text-sm text-slate-500 line-through">{getformattedPrice(item.labeledPrice)}</span>
+                            <span className="text-xs text-slate-400">Original</span>
+                          </div>
+                        ) : (item.markedPrice && item.markedPrice !== "" && item.markedPrice !== null && item.markedPrice !== undefined) ? (
+                          <div className="flex flex-col">
+                            <span className="text-sm text-slate-500 line-through">{getformattedPrice(item.markedPrice)}</span>
+                            <span className="text-xs text-slate-400">Original</span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col">
+                            <span className="text-slate-300 text-sm">—</span>
+                            <span className="text-xs text-slate-400">No labeled price</span>
+                          </div>
+                        )}
+                      </td>
+
+                      <td className="px-6 py-5">
+                        <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border border-blue-200/50">
+                          {item.category || 'Others'}
+                        </span>
+                      </td>
+
+                      <td className="px-6 py-5">
+                        <div className="flex justify-center">
+                          <div className="relative group">
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                            <img
+                              src={item.images?.[0] || "/placeholder.png"}
+                              alt={item.productName}
+                              className="w-14 h-14 object-cover rounded-xl border-2 border-slate-200 shadow-sm group-hover:shadow-lg transition-all duration-300 group-hover:scale-105"
+                              loading="lazy"
+                            />
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-5">
+                        <div className="flex justify-center">
+                          {item.isVisible ? (
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-green-50 to-emerald-100 text-green-700 border border-green-200/50">
+                              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                              <span>Visible</span>
+                            </div>
+                          ) : (
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-slate-100 to-slate-200 text-slate-600 border border-slate-300/50">
+                              <span className="w-2 h-2 bg-slate-400 rounded-full"></span>
+                              <span>Hidden</span>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-5">
+                        <span className="text-sm font-medium text-slate-700">{item.Brand || <span className="text-slate-400">N/A</span>}</span>
+                      </td>
+
+                      <td className="px-6 py-5">
+                        <span className="text-sm text-slate-600">{item.model || <span className="text-slate-400">N/A</span>}</span>
+                      </td>
+
+                      <td className="px-6 py-5">
+                        <div className="flex justify-center">
+                          <Link
+                            to="/admin/update-product"
+                            state={item}
+                            className="group inline-flex items-center justify-center p-2.5 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 text-blue-600 hover:from-blue-100 hover:to-purple-100 transition-all duration-200 border border-blue-200/50 hover:border-blue-300/50 hover:shadow-md transform hover:scale-105"
+                            title="Edit product"
+                          >
+                            <CiEdit className="w-4 h-4 group-hover:rotate-12 transition-transform duration-200" />
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-4 px-4 py-3 bg-gradient-to-r from-slate-50 to-slate-100 rounded-2xl border border-slate-200/60">
+            <p className="text-xs text-slate-500 text-center flex items-center justify-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Tip: Scroll horizontally on smaller screens to view all columns
+            </p>
+          </div>
+        </div>
       )}
-    </tbody>
-  </table>
-</div>
 
-
-      {/* ---------- Add Product Button ---------- */}
+      {/* Floating Add Button */}
       <Link
         to="/admin/add-product"
-        className="text-white bg-accent w-[50px] h-[50px] flex justify-center items-center text-2xl rounded-[20px] hover:rounded-full fixed bottom-12 right-16"
+        className="fixed bottom-8 right-8 group w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 flex items-center justify-center border border-white/20"
       >
-        <FaPlus />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <FaPlus className="text-xl relative z-10 group-hover:rotate-90 transition-transform duration-500" />
       </Link>
     </div>
   );
